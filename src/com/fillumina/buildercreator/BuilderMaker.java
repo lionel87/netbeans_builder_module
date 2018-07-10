@@ -92,23 +92,7 @@ class BuilderMaker {
     MethodTree createBuildMethod() {
         ModifiersTree modifiers = make.Modifiers(EnumSet.of(Modifier.PUBLIC));
 
-        final StringBuilder body = new StringBuilder();
-        body.append("{\nreturn new ").append(typeClassElement.toString()).append("(");
-
-        boolean first = true;
-        for (VariableElement element : elements) {
-            final String varName = element.getSimpleName().toString();
-
-            if (first) {
-                first = false;
-            } else {
-                body.append(", ");
-            }
-
-            body.append(varName);
-        }
-
-        body.append(");\n}");
+        String body = "{\nreturn new " + typeClassElement.getSimpleName() + "(this);\n}";
 
         ExpressionTree returnType = make.QualIdent(typeClassElement.toString());
 
@@ -118,7 +102,7 @@ class BuilderMaker {
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
-                body.toString(),
+                body,
                 null);
     }
 
@@ -138,17 +122,21 @@ class BuilderMaker {
         final StringBuilder body = new StringBuilder();
         body.append("{\n");
 
-        ModifiersTree finalModifier = make.Modifiers(EnumSet.of(Modifier.FINAL));
-
         List<VariableTree> params = new ArrayList<>();
+
+        ModifiersTree finalModifier = make.Modifiers(EnumSet.of(Modifier.FINAL));
+        String builderName = typeClassElement.getSimpleName() + "." + builderClassName;
+        ExpressionTree builderType = make.QualIdent(builderName);
+
+        params.add(make.Variable(finalModifier, "builder", builderType, null));
+
         for (VariableElement element : elements) {
             final String varName = element.getSimpleName().toString();
             Tree type = make.Type(element.asType());
-            params.add(make.Variable(finalModifier, varName, type, null));
 
             body.append("this.")
                     .append(varName)
-                    .append(" = ")
+                    .append(" = builder.")
                     .append(varName)
                     .append(";\n");
         }
