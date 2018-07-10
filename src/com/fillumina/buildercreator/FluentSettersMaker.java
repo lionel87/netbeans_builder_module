@@ -46,10 +46,10 @@ class FluentSettersMaker {
             if (member.getKind().equals(Tree.Kind.METHOD)) {
                 MethodTree mt = (MethodTree) member;
                 for (Element element : elements) {
-                    if (mt.getName().contentEquals(element.getSimpleName()) &&
-                            mt.getParameters().size() == 1 &&
-                            mt.getReturnType() != null &&
-                            mt.getReturnType().getKind() == Tree.Kind.IDENTIFIER) {
+                    if (mt.getName().contentEquals(element.getSimpleName())
+                            && mt.getParameters().size() == 1
+                            && mt.getReturnType() != null
+                            && mt.getReturnType().getKind() == Tree.Kind.IDENTIFIER) {
                         treeIt.remove();
                         if (index > counter) {
                             index--;
@@ -69,12 +69,11 @@ class FluentSettersMaker {
 
         int position = index - 1;
         for (VariableElement element : elements) {
-            VariableTree parameter =
-                    make.Variable(make.Modifiers(Collections.<Modifier>singleton(Modifier.FINAL),
-                            Collections.<AnnotationTree>emptyList()),
-                            "value",
-                            make.Identifier(toStringWithoutPackages(element)),
-                            null);
+            VariableTree parameter = make.Variable(
+                    make.Modifiers(Collections.<Modifier>singleton(Modifier.FINAL), Collections.<AnnotationTree>emptyList()),
+                    "value",
+                    make.Identifier(toStringWithoutPackages(element)),
+                    null);
 
             ExpressionTree returnType = make.QualIdent(className);
 
@@ -106,13 +105,11 @@ class FluentSettersMaker {
 
     void addFields() {
         for (VariableElement element : elements) {
-            VariableTree field =
-                    make.Variable(make.Modifiers(
-                            EnumSet.of(Modifier.PRIVATE),
-                            Collections.<AnnotationTree>emptyList()),
-                            element.getSimpleName().toString(),
-                            make.Identifier(toStringWithoutPackages(element)),
-                            null);
+            VariableTree field = make.Variable(
+                    make.Modifiers(EnumSet.of(Modifier.PRIVATE), Collections.<AnnotationTree>emptyList()),
+                    element.getSimpleName().toString(),
+                    make.Identifier(toStringWithoutPackages(element)),
+                    null);
 
             members.add(field);
         }

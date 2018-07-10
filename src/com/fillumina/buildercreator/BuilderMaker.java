@@ -35,7 +35,8 @@ class BuilderMaker {
     private final String builderMethodName;
     private final String buildMethodName;
 
-    public BuilderMaker(TreeMaker make,
+    public BuilderMaker(
+            TreeMaker make,
             List<Tree> members,
             List<VariableElement> elements,
             TypeElement typeClassElement,
@@ -96,7 +97,8 @@ class BuilderMaker {
 
         ExpressionTree returnType = make.QualIdent(typeClassElement.toString());
 
-        return make.Method(modifiers,
+        return make.Method(
+                modifiers,
                 buildMethodName,
                 returnType,
                 Collections.<TypeParameterTree>emptyList(),
@@ -109,7 +111,8 @@ class BuilderMaker {
     MethodTree createBuilderPrivateConstructor() {
         ModifiersTree modifiers = make.Modifiers(EnumSet.of(Modifier.PRIVATE));
 
-        return make.Constructor(modifiers,
+        return make.Constructor(
+                modifiers,
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
                 Collections.<ExpressionTree>emptyList(),
@@ -173,7 +176,7 @@ class BuilderMaker {
 
     ClassTree createStaticInnerBuilderClass(final List<Tree> builderMembers) {
         List<AnnotationTree> annotations = new ArrayList<>();
-
+        
         ClassTree clazz = make.Class(
                 make.Modifiers(PUBLIC_STATIC, annotations),
                 builderClassName,
