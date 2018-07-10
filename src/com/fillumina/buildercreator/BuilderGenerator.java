@@ -59,7 +59,7 @@ public class BuilderGenerator extends ExtendedCodeGenerator {
 
             builderMembers.add(builderMaker.createBuilderPrivateConstructor());
 
-            fluentSettersMaker.addFluentSetters(builderMembers.size());
+            fluentSettersMaker.addFluentSetters(builderMembers.size(), true);
 
             builderMembers.add(builderMaker.createBuildMethod());
 

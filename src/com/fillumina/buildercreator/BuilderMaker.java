@@ -137,7 +137,9 @@ class BuilderMaker {
             final String varName = element.getSimpleName().toString();
             Tree type = make.Type(element.asType());
 
-            body.append("this.")
+            body.append("if (builder.")
+                    .append(varName)
+                    .append("$set) this.")
                     .append(varName)
                     .append(" = builder.")
                     .append(varName)

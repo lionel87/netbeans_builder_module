@@ -64,6 +64,10 @@ class FluentSettersMaker {
     }
 
     void addFluentSetters(int index) {
+        addFluentSetters(index, false);
+    }
+    
+    void addFluentSetters(int index, boolean generate$set) {
         Set<Modifier> modifiers = EnumSet.of(Modifier.PUBLIC);
         List<AnnotationTree> annotations = new ArrayList<>();
 
@@ -77,7 +81,7 @@ class FluentSettersMaker {
 
             ExpressionTree returnType = make.QualIdent(className);
 
-            final String bodyText = createFluentSetterMethodBody(element);
+            final String bodyText = createFluentSetterMethodBody(element, generate$set);
 
             MethodTree method = make.Method(
                     make.Modifiers(modifiers, annotations),
@@ -94,16 +98,26 @@ class FluentSettersMaker {
         }
     }
 
-    private static String createFluentSetterMethodBody(Element element) {
+    private static String createFluentSetterMethodBody(Element element, boolean generate$set) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\nthis.")
                 .append(element.getSimpleName())
-                .append(" = value;\n")
-                .append("return this;\n}");
+                .append(" = value;\n");
+        
+        if (generate$set) {
+            sb.append("this.")
+                .append(element.getSimpleName())
+                .append("$set = true;\n");
+        }
+        
+        sb.append("return this;\n}");
         return sb.toString();
     }
 
     void addFields() {
+        Tree booleanType = make.Type("boolean");
+        ExpressionTree initFalse = make.Literal(false);
+
         for (VariableElement element : elements) {
             VariableTree field = make.Variable(
                     make.Modifiers(EnumSet.of(Modifier.PRIVATE), Collections.<AnnotationTree>emptyList()),
@@ -112,6 +126,14 @@ class FluentSettersMaker {
                     null);
 
             members.add(field);
+
+            VariableTree field$set = make.Variable(
+                    make.Modifiers(EnumSet.of(Modifier.PRIVATE), Collections.<AnnotationTree>emptyList()),
+                    element.getSimpleName().toString() + "$set",
+                    booleanType,
+                    initFalse);
+
+            members.add(field$set);
         }
     }
 
