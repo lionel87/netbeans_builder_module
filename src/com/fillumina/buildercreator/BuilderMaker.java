@@ -11,8 +11,10 @@ import com.sun.source.tree.VariableTree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -133,13 +135,33 @@ class BuilderMaker {
 
         params.add(make.Variable(finalModifier, "builder", builderType, null));
 
+        Map<String, Boolean> inited = new HashMap<>();
+        for (Tree member : members) {
+            if (member.getKind().equals(Tree.Kind.VARIABLE)) {
+                VariableTree vt = (VariableTree) member;
+                inited.put(vt.getName().toString(), vt.getInitializer() != null);
+            }
+        }
+        
         for (VariableElement element : elements) {
             final String varName = element.getSimpleName().toString();
             Tree type = make.Type(element.asType());
 
-            body.append("if (builder.")
-                    .append(varName)
-                    .append("$set) this.")
+            if (inited.get(varName)) {
+                body.append("if (builder.")
+                        .append(varName)
+                        .append("$set) ");
+            } else {
+                body.append("if (!builder.")
+                        .append(varName)
+                        .append("$set) throw new RuntimeException(\"")
+                        .append(typeClassElement.getSimpleName())
+                        .append(".")
+                        .append(varName)
+                        .append(" is not set!\");\n");
+            }
+            
+            body.append("this.")
                     .append(varName)
                     .append(" = builder.")
                     .append(varName)
