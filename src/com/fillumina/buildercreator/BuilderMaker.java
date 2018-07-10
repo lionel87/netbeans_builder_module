@@ -24,8 +24,8 @@ import org.netbeans.api.java.source.TreeMaker;
  * @author Francesco Illuminati <fillumina@gmail.com>
  */
 class BuilderMaker {
-    private static final EnumSet<Modifier> PUBLIC_STATIC =
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
+
+    private static final EnumSet<Modifier> PUBLIC_STATIC = EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
 
     private final TreeMaker make;
     private final List<Tree> members;
@@ -58,17 +58,17 @@ class BuilderMaker {
 
             if (member.getKind().equals(Tree.Kind.METHOD)) {
                 MethodTree mt = (MethodTree) member;
-                if (mt.getName().contentEquals(builderMethodName) &&
-                        mt.getParameters().isEmpty() &&
-                        mt.getReturnType() != null) {
+                if (mt.getName().contentEquals(builderMethodName)
+                        && mt.getParameters().isEmpty()
+                        && mt.getReturnType() != null) {
                     treeIt.remove();
                     if (index > counter) {
                         index--;
                     }
 
-                } else if (mt.getName().contentEquals("<init>") &&
-                        mt.getModifiers().getFlags().contains(Modifier.PRIVATE) &&
-                        mt.getReturnType() == null) {
+                } else if (mt.getName().contentEquals("<init>")
+                        && mt.getModifiers().getFlags().contains(Modifier.PRIVATE)
+                        && mt.getReturnType() == null) {
                     treeIt.remove();
                     if (index > counter) {
                         index--;
@@ -166,15 +166,15 @@ class BuilderMaker {
         Set<Modifier> modifiers = PUBLIC_STATIC;
         List<AnnotationTree> annotations = new ArrayList<>();
 
-        String builderName = typeClassElement.getSimpleName() + "." +
-                builderClassName;
+        String builderName = typeClassElement.getSimpleName() + "." + builderClassName;
 
         ExpressionTree returnType = make.QualIdent(builderName);
 
         final String bodyText = "{return new " + builderName + "();}";
 
         return make.Method(
-                make.Modifiers(modifiers, annotations), builderMethodName,
+                make.Modifiers(modifiers, annotations),
+                builderMethodName,
                 returnType,
                 Collections.<TypeParameterTree>emptyList(),
                 Collections.<VariableTree>emptyList(),
